@@ -11,21 +11,6 @@ public class CreatePAN implements Command {
     private static final String CREATED_PAN = "Your card has been created\nYour card number:\n";
     private static final String CREATED_PIN = "Your card PIN:\n";
 
-
-    private boolean isLuhn(String pan) {
-        int result = 0;
-        for (int i = 0; i < pan.length(); i++) {
-            int n = Character.getNumericValue(pan.charAt(i));
-            if (i % 2 == 0) {
-                int dblN = n * 2;
-                dblN = dblN > 9 ? dblN - 9 : n * 2;
-                result += dblN;
-            } else
-                result += n;
-        }
-        return result % 10 == 0;
-    }
-
     public CreatePAN(DataBase dataBase) {
         this.dataBase = dataBase;
         response = new Response();
@@ -45,7 +30,7 @@ public class CreatePAN implements Command {
     private void createPAN() {
         String strPan = BIN + getN(9);
         int l = 0;
-        while (!isLuhn(strPan + l)) l++;
+        while (!Utils.isLuhn(strPan + l)) l++;
         pan =  strPan + l;
         pin = getN(4);
     }

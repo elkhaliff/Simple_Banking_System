@@ -1,20 +1,22 @@
 package banking;
 
-public class Balance implements Command {
+public class AddIncome implements Command {
     private final DataBase dataBase;
     int id;
+    int balance;
     private final Response response;
 
-    public Balance(DataBase dataBase, int id) {
+    public AddIncome(DataBase dataBase, int id, int balance) {
         this.dataBase = dataBase;
         this.id = id;
+        this.balance = balance;
         response = new Response();
     }
 
     @Override
     public void execute() {
-        int balance = dataBase.getBalance(id);
-        response.setResponse(String.valueOf(balance));
+        dataBase.addIncome(id, balance);
+        response.setResponse("Income was added!");
     }
 
     @Override

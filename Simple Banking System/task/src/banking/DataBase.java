@@ -6,13 +6,11 @@ public class DataBase {
 
     private static String fileDB = "db_any.s3db";
 
-    private static final String selectCard = "SELECT id, number, pin, balance FROM card WHERE number = ? AND pin = ?";
-
+    private static final String selectCard = "SELECT id, number, pin, balance FROM card WHERE id = ?";
 
     public DataBase(String fileName) {
         fileDB = (fileName.equals("")) ? fileDB : fileName;
         createTable();
-//        getAll();
     }
 
     private Connection connectDatabase() {
@@ -57,34 +55,77 @@ public class DataBase {
         return true;
     }
 
-    public boolean testCard (String pan, String pin) {
+    public int testCard(String pan, String pin) {
+        String selectCard = "SELECT id, number, pin, balance FROM card WHERE number = ? AND pin = ?";
         try (Connection conn = connectDatabase();
              PreparedStatement pstmt  = conn.prepareStatement(selectCard)) {
 
             pstmt.setString(1, pan);
             pstmt.setString(2, pin);
             ResultSet rs  = pstmt.executeQuery();
-            return rs.next();
-
+            if (rs.next())
+                return rs.getInt("id");
+            return 0;
         } catch (SQLException e) {
-            return false;
+            return 0;
         }
     }
 
-    public int getBalance(String pan, String pin) {
+    public int isExists(String pan) {
+        String existsCard = "SELECT id, number, pin, balance FROM card WHERE number = ?";
+        try (Connection conn = connectDatabase();
+             PreparedStatement pstmt  = conn.prepareStatement(existsCard)) {
+
+            pstmt.setString(1, pan);
+            ResultSet rs  = pstmt.executeQuery();
+            if (rs.next())
+                return rs.getInt("id");
+            return 0;
+        } catch (SQLException e) {
+            return 0;
+        }
+    }
+
+    public int getBalance(int id) {
         int balance = 0;
         try (Connection conn = connectDatabase();
              PreparedStatement pstmt = conn.prepareStatement(selectCard)) {
 
-            pstmt.setString(1, pan);
-            pstmt.setString(2, pin);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next())
-                balance = rs.getInt("balanse");
+                balance = rs.getInt("balance");
 
         } catch (SQLException e) {
             return 0;
         }
         return balance;
+    }
+
+    public void addIncome(int id, int balance) {
+        int new_balance = getBalance(id) + balance;
+
+        String updateCard = "UPDATE card SET balance = ? WHERE id = ?";
+        try (Connection conn = connectDatabase();
+             PreparedStatement pstmt  = conn.prepareStatement(updateCard)) {
+
+            pstmt.setInt(1, new_balance);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeAccount(int id) {
+        String updateCard = "DELETE FROM card WHERE id = ?";
+        try (Connection conn = connectDatabase();
+             PreparedStatement pstmt  = conn.prepareStatement(updateCard)) {
+
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

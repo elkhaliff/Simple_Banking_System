@@ -2,6 +2,7 @@ package banking;
 
 public class Response {
     private String response;
+    private int id;
     private boolean noError;
 
     public Response() {
@@ -13,6 +14,10 @@ public class Response {
     }
 
     public String getResponse() { return response; }
+
+    public void setId(int id) { this.id = id; }
+
+    public int getId() { return id; }
 
     public void setNoError(boolean noError) { this.noError = noError; }
 

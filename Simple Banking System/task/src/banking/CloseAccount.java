@@ -1,11 +1,13 @@
 package banking;
 
-public class Balance implements Command {
+public class CloseAccount  implements Command {
     private final DataBase dataBase;
     int id;
     private final Response response;
 
-    public Balance(DataBase dataBase, int id) {
+    private static final String SUCCESS_CLOSE = "The account has been closed!";
+
+    public CloseAccount(DataBase dataBase, int id) {
         this.dataBase = dataBase;
         this.id = id;
         response = new Response();
@@ -13,8 +15,9 @@ public class Balance implements Command {
 
     @Override
     public void execute() {
-        int balance = dataBase.getBalance(id);
-        response.setResponse(String.valueOf(balance));
+        dataBase.closeAccount(id);
+        response.setResponse(SUCCESS_CLOSE);
+        response.setNoError(true);
     }
 
     @Override
