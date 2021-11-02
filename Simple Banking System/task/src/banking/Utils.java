@@ -12,9 +12,9 @@ public class Utils {
         return scanner.nextInt();
     }
 
-    public static long getLong(String string) {
+    public static String getString(String string) {
         Scanner scanner = new Scanner(System.in);
         println(string + " ");
-        return scanner.nextLong();
+        return scanner.nextLine();
     }
 }

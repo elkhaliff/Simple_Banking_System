@@ -1,5 +1,7 @@
 package banking;
 
+import java.util.Objects;
+
 public class Session {
 
     private static final int LVL_1 = 10;
@@ -22,16 +24,16 @@ public class Session {
     private static final String GET_PIN = "Enter your PIN:";
 
     private final DataBase dataBase;
-    long pan;
-    int pin;
+    String pan;
+    String pin;
 
-    public Session() {
-        dataBase = new DataBase();
+    public Session(String fileName) {
+        dataBase = new DataBase(fileName);
     }
 
     private void getPanPin() {
-        pan = Utils.getLong(GET_PAN);
-        pin = Utils.getInt(GET_PIN);
+        pan = Utils.getString(GET_PAN);
+        pin = Utils.getString(GET_PIN);
     }
 
     public void run() {
@@ -55,10 +57,12 @@ public class Session {
                     break;
                 }
                 case BALANCE: {
-                    command = new Balance(dataBase);
+                    command = new Balance(dataBase, pan, pin);
                     break;
                 }
                 case LOGOUT: {
+                    pan = "";
+                    pin = "";
                     command = new Logout(dataBase);
                     break;
                 }
@@ -76,12 +80,12 @@ public class Session {
 
             Response response = transactionBroker.getResultCommand();
             String resp = response.getResponse();
-            if (resp != "")
+            if (!Objects.equals(resp, ""))
                 Utils.println(response.getResponse());
 
             if (currAction == LOGIN && response.isNoError()) currLvl = LVL_2;
             if (currAction == LOGOUT && response.isNoError()) currLvl = LVL_1;
-        } while (currAction != EXIT1 || currAction != EXIT2);
+        } while (true);
     }
 
 }
